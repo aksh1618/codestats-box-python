@@ -13,7 +13,7 @@ WIDTH_JUSTIFICATION_SEPARATOR = "·"
 RECENT_STATS_SEPARATOR = " + "
 PAST_WEEK_SUFFIX_STRING = " (past week)"
 NEW_XP_SUFFIX_STRING = " (new xp)"
-GIST_TITLE_FORMAT = "📊 Code::Stats XP for {user}"
+GIST_TITLE = "📊 My Code::Stats XP"
 MAX_LINE_LENGTH = 54
 
 ENV_VAR_GIST_ID = "GIST_ID"
@@ -138,7 +138,7 @@ def main():
         get_adjusted_line(title_and_value)
         for title_and_value in [total_xp_line, *language_xp_lines]
     ]
-    update_gist(GIST_TITLE_FORMAT.format(user=code_stats_user_name), "\n".join(lines))
+    update_gist(GIST_TITLE, "\n".join(lines))
 
 
 if __name__ == "__main__":
