@@ -9,6 +9,7 @@ import requests
 from github import Github
 
 TOP_LANGUAGES_COUNT = 10
+TOTAL_XP_TITLE = "Total XP"
 WIDTH_JUSTIFICATION_SEPARATOR = "·"
 RECENT_STATS_SEPARATOR = " + "
 PAST_WEEK_SUFFIX_STRING = " (past week)"
@@ -71,7 +72,7 @@ def get_total_xp_line(
         if past_week
         else f"{total_xp:,}"
     )
-    return TitleAndValue("Total XP", total_xp_value)
+    return TitleAndValue(TOTAL_XP_TITLE, total_xp_value)
 
 
 def __get_language_xp_line(

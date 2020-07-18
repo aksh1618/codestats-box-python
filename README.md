@@ -30,8 +30,19 @@
 - **CODE_STATS_USERNAME:** Your [Code::Stats](https://codestats.net) username. (This can also be put directly in the yml)
 
 - **STATS_TYPE:** (Optional) Type of stats, supported values:
-  - `recent`: (Default) Shows the past week in total as well as language wise recent xp
-  - `skip-recent`: Skips the recent stats (the parts after the ` +`) and shows just the aggregate total and language XPs.
+  - `recent`: (Default) Shows the past week in total as well as language wise recent XP:
+
+      ```none
+      Total XP··················998,967 + 20,466 (past week)
+      Java····························511,969 + 397 (new xp)
+      ```
+
+  - `skip-recent`: Skips the recent stats (the parts after the ` +`) and shows just the aggregate total and language XPs:
+
+      ```none
+      Total XP·····································1,019,439
+      Java···········································512,366
+      ```
 
   (This can also be put directly in `.github/workflows/codestats.yml`)
 
@@ -43,5 +54,5 @@ pipenv install --dev
 # testing
 pipenv run python codestats_box.py test <gist-id> <github-token> <user> <type>
 # example
-# pipenv run python codestats_box.py test test ce5221fc5f3739d2c81ce7db99f17519 cf9181618bf1618253d17161843f71a2bb161850 aksh recent
+# pipenv run python codestats_box.py test ce5221fc5f3739d2c81ce7db99f17519 cf9181618bf1618253d17161843f71a2bb161850 aksh recent
 ```
