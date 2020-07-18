@@ -30,18 +30,26 @@
 - **CODE_STATS_USERNAME:** Your [Code::Stats](https://codestats.net) username. (This can also be put directly in the yml)
 
 - **STATS_TYPE:** (Optional) Type of stats, supported values:
-  - `recent-xp`: (Default) Shows the past week in total as well as language wise recent XP:
+
+  - `level-xp`: (Default) Show total and language XPs with level:
 
       ```none
-      Total XP··················998,967 + 20,466 (past week)
-      Java····························511,969 + 397 (new xp)
+      Total XP :::::::::::::::::::::: lvl  25 [1,020,821 XP]
+      Java :::::::::::::::::::::::::: lvl  17 [  512,366 XP]
+      ```
+
+  - `recent-xp`: Shows the past week in total as well as language wise recent XP:
+
+      ```none
+      Total XP :::::::::::::::: 998,967 + 21,854 (past week)
+      Java :::::::::::::::::::::::::: 511,969 + 397 (new xp)
       ```
 
   - `xp`: Skips the recent stats (the parts after the ` +`) and shows just the aggregate total and language XPs:
 
       ```none
-      Total XP·····································1,019,439
-      Java···········································512,366
+      Total XP ::::::::::::::::::::::::::::::::::: 1,020,821
+      Java ::::::::::::::::::::::::::::::::::::::::: 512,366
       ```
 
   (This can also be put directly in `.github/workflows/codestats.yml`)
