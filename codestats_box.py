@@ -27,6 +27,14 @@ REQUIRED_ENVS = [
     ENV_VAR_CODE_STATS_USERNAME,
 ]
 
+STATS_TYPE_RECENT_XP = "recent-xp"
+STATS_TYPE_XP = "xp"
+ALLOWED_STATS_TYPES = [
+    STATS_TYPE_RECENT_XP,
+    STATS_TYPE_XP,
+]
+DEFAULT_STATS_TYPE = STATS_TYPE_RECENT_XP
+
 CODE_STATS_URL_FORMAT = "https://codestats.net/api/users/{user}"
 CODE_STATS_DATE_KEY = "dates"
 CODE_STATS_TOTAL_XP_KEY = "total_xp"
@@ -35,6 +43,27 @@ CODE_STATS_LANGUAGES_XP_KEY = "xps"
 CODE_STATS_LANGUAGES_NEW_XP_KEY = "new_xps"
 
 TitleAndValue = namedtuple("TitleAndValue", "title value")
+
+
+def validate_and_init() -> bool:
+    env_vars_absent = [
+        env
+        for env in REQUIRED_ENVS
+        if env not in os.environ or len(os.environ[env]) == 0
+    ]
+    if env_vars_absent:
+        print(f"Please define {env_vars_absent} in your github secrets. Aborting...")
+        return False
+
+    if not (
+        ENV_VAR_STATS_TYPE in os.environ
+        and len(os.environ[ENV_VAR_STATS_TYPE]) > 0
+        and os.environ[ENV_VAR_STATS_TYPE] in ALLOWED_STATS_TYPES
+    ):
+        print(f"Using default stats type: {DEFAULT_STATS_TYPE}")
+        os.environ[ENV_VAR_STATS_TYPE] = DEFAULT_STATS_TYPE
+
+    return True
 
 
 def get_adjusted_line(title_and_value: TitleAndValue) -> str:
@@ -53,7 +82,7 @@ def get_code_stats_response(user: str) -> Dict[str, Any]:
 
 
 def get_total_xp_line(
-    code_stats_response: Dict[str, Any], past_week: bool = True
+    code_stats_response: Dict[str, Any], stats_type: str
 ) -> TitleAndValue:
     last_seven_days = [
         str(datetime.date.today() - datetime.timedelta(days=i)) for i in range(7)
@@ -62,34 +91,32 @@ def get_total_xp_line(
         [code_stats_response[CODE_STATS_DATE_KEY][day] for day in last_seven_days]
     )
     total_xp = code_stats_response[CODE_STATS_TOTAL_XP_KEY]
-    total_xp_value = (
-        f"{total_xp - last_seven_days_xp:,}"
-        + (
+    total_xp_value = ""
+    if stats_type == STATS_TYPE_RECENT_XP:
+        total_xp_value = f"{total_xp - last_seven_days_xp:,}" + (
             f"{RECENT_STATS_SEPARATOR}{last_seven_days_xp:,}{PAST_WEEK_SUFFIX_STRING}"
             if last_seven_days_xp > 0
             else ""
         )
-        if past_week
-        else f"{total_xp:,}"
-    )
+    elif stats_type == STATS_TYPE_XP:
+        total_xp_value = f"{total_xp:,}"
     return TitleAndValue(TOTAL_XP_TITLE, total_xp_value)
 
 
 def __get_language_xp_line(
-    language: str, language_stats: Dict[str, int], recent: bool = True
+    language: str, language_stats: Dict[str, int], stats_type: str
 ) -> TitleAndValue:
     xp = language_stats[CODE_STATS_LANGUAGES_XP_KEY]
     recent_xp = language_stats[CODE_STATS_LANGUAGES_NEW_XP_KEY]
-    language_xp_value = (
-        f"{xp - recent_xp:,}"
-        + (
+    language_xp_value = ""
+    if stats_type == STATS_TYPE_RECENT_XP:
+        language_xp_value = f"{xp - recent_xp:,}" + (
             f"{RECENT_STATS_SEPARATOR}{recent_xp:,}{NEW_XP_SUFFIX_STRING}"
             if recent_xp > 0
             else ""
         )
-        if recent
-        else f"{xp:,}"
-    )
+    elif stats_type == STATS_TYPE_XP:
+        language_xp_value = f"{xp:,}"
     return TitleAndValue(language, language_xp_value)
 
 
@@ -118,28 +145,23 @@ def update_gist(title: str, content: str) -> bool:
 
 
 def main():
-    envs_absent = [env for env in REQUIRED_ENVS if env not in os.environ]
-    if envs_absent:
-        print(f"Please define {envs_absent} in your github secrets. Aborting...")
+
+    if not validate_and_init():
         return
 
     code_stats_user_name = os.environ[ENV_VAR_CODE_STATS_USERNAME]
-
     code_stats_response = get_code_stats_response(code_stats_user_name)
 
-    recent_stats = (
-        True
-        if ENV_VAR_STATS_TYPE not in os.environ
-        else os.environ[ENV_VAR_STATS_TYPE] == "recent"
-    )
-    total_xp_line = get_total_xp_line(code_stats_response, recent_stats)
-    language_xp_lines = get_language_xp_lines(code_stats_response, recent_stats)
+    stats_type = os.environ[ENV_VAR_STATS_TYPE]
+    total_xp_line = get_total_xp_line(code_stats_response, stats_type)
+    language_xp_lines = get_language_xp_lines(code_stats_response, stats_type)
 
     lines = [
         get_adjusted_line(title_and_value)
         for title_and_value in [total_xp_line, *language_xp_lines]
     ]
-    update_gist(GIST_TITLE, "\n".join(lines))
+    content = "\n".join(lines)
+    update_gist(GIST_TITLE, content)
 
 
 if __name__ == "__main__":
