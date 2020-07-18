@@ -22,8 +22,18 @@
 ## 🤫 Environment Secrets
 
 - **GH_TOKEN:** The GitHub token generated above.
-- **GIST_ID:** The ID portion from your gist url `https://gist.github.com/<github-username>/`**`6d5f84419863089a167387da62dd7081`**. (Alternatively this can be put directly in `.github/workflows/codestats.yml` as it is public anyway.)
-- **CODE_STATS_USERNAME:** Your [Code::Stats](https://codestats.net) username. (This can also be put directly in `.github/workflows/codestats.yml`)
+- **GIST_ID:** The ID portion from your gist url:
+
+  `https://gist.github.com/aksh1618/`**`ce5221fc5f3739d2c81ce7db99f17519`**.
+
+  (Alternatively this can be put directly in `.github/workflows/codestats.yml` as it is public anyway.)
+- **CODE_STATS_USERNAME:** Your [Code::Stats](https://codestats.net) username. (This can also be put directly in the yml)
+
+- **STATS_TYPE:** (Optional) Type of stats, supported values:
+  - `recent`: (Default) Shows the past week in total as well as language wise recent xp
+  - `skip-recent`: Skips the recent stats (the parts after the ` +`) and shows just the aggregate total and language XPs.
+
+  (This can also be put directly in `.github/workflows/codestats.yml`)
 
 ## 🤓 Hacking
 
@@ -31,5 +41,7 @@
 # setup
 pipenv install --dev
 # testing
-pipenv run python codestats_box.py test <gist> <github-token> <user> <type>
+pipenv run python codestats_box.py test <gist-id> <github-token> <user> <type>
+# example
+# pipenv run python codestats_box.py test test ce5221fc5f3739d2c81ce7db99f17519 cf9181618bf1618253d17161843f71a2bb161850 aksh recent
 ```
