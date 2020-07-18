@@ -1,5 +1,6 @@
 from collections import namedtuple
 import datetime
+import math
 import os
 import sys
 from typing import Any, Dict, List
@@ -9,11 +10,12 @@ import requests
 from github import Github
 
 TOP_LANGUAGES_COUNT = 10
-TOTAL_XP_TITLE = "Total XP"
-WIDTH_JUSTIFICATION_SEPARATOR = "·"
+WIDTH_JUSTIFICATION_SEPARATOR = ":"
 RECENT_STATS_SEPARATOR = " + "
+TOTAL_XP_TITLE = "Total XP"
 PAST_WEEK_SUFFIX_STRING = " (past week)"
 NEW_XP_SUFFIX_STRING = " (new xp)"
+LEVEL_STRING_FORMAT = "lvl {level:>3} [{xp:>9,} XP]"
 GIST_TITLE = "💻 My Code::Stats XP"
 MAX_LINE_LENGTH = 54
 
@@ -29,11 +31,13 @@ REQUIRED_ENVS = [
 
 STATS_TYPE_RECENT_XP = "recent-xp"
 STATS_TYPE_XP = "xp"
+STATS_TYPE_LEVEL = "level"
 ALLOWED_STATS_TYPES = [
     STATS_TYPE_RECENT_XP,
     STATS_TYPE_XP,
+    STATS_TYPE_LEVEL,
 ]
-DEFAULT_STATS_TYPE = STATS_TYPE_RECENT_XP
+DEFAULT_STATS_TYPE = STATS_TYPE_LEVEL
 
 CODE_STATS_URL_FORMAT = "https://codestats.net/api/users/{user}"
 CODE_STATS_DATE_KEY = "dates"
@@ -41,6 +45,8 @@ CODE_STATS_TOTAL_XP_KEY = "total_xp"
 CODE_STATS_LANGUAGES_KEY = "languages"
 CODE_STATS_LANGUAGES_XP_KEY = "xps"
 CODE_STATS_LANGUAGES_NEW_XP_KEY = "new_xps"
+
+XP_TO_LEVEL = lambda xp: math.floor(0.025 * math.sqrt(xp))
 
 TitleAndValue = namedtuple("TitleAndValue", "title value")
 
@@ -68,13 +74,10 @@ def validate_and_init() -> bool:
 
 def get_adjusted_line(title_and_value: TitleAndValue) -> str:
     separation = MAX_LINE_LENGTH - (
-        len(title_and_value.title) + len(title_and_value.value)
+        len(title_and_value.title) + len(title_and_value.value) + 2
     )
-    return (
-        title_and_value.title
-        + WIDTH_JUSTIFICATION_SEPARATOR * separation
-        + title_and_value.value
-    )
+    separator = f" {WIDTH_JUSTIFICATION_SEPARATOR * separation} "
+    return title_and_value.title + separator + title_and_value.value
 
 
 def get_code_stats_response(user: str) -> Dict[str, Any]:
@@ -100,6 +103,10 @@ def get_total_xp_line(
         )
     elif stats_type == STATS_TYPE_XP:
         total_xp_value = f"{total_xp:,}"
+    elif stats_type == STATS_TYPE_LEVEL:
+        total_xp_value = LEVEL_STRING_FORMAT.format(
+            level=XP_TO_LEVEL(total_xp), xp=total_xp
+        )
     return TitleAndValue(TOTAL_XP_TITLE, total_xp_value)
 
 
@@ -117,6 +124,8 @@ def __get_language_xp_line(
         )
     elif stats_type == STATS_TYPE_XP:
         language_xp_value = f"{xp:,}"
+    elif stats_type == STATS_TYPE_LEVEL:
+        language_xp_value = LEVEL_STRING_FORMAT.format(level=XP_TO_LEVEL(xp), xp=xp)
     return TitleAndValue(language, language_xp_value)
 
 
