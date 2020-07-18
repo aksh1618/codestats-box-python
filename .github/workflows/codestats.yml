@@ -1,0 +1,23 @@
+name: Update gist with Code::Stats stats
+on:
+  push:
+    branches: master
+  schedule:
+    - cron: "0 */3 * * *"
+jobs:
+  update-gist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Update gist
+        run: python codestats_box.py
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+          CODE_STATS_USERNAME: ${{ secrets.CODE_STATS_USERNAME }}
