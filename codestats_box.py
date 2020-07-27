@@ -91,7 +91,8 @@ def get_total_xp_line(
         str(datetime.date.today() - datetime.timedelta(days=i)) for i in range(7)
     ]
     last_seven_days_xp = sum(
-        [code_stats_response[CODE_STATS_DATE_KEY][day] for day in last_seven_days]
+        [code_stats_response[CODE_STATS_DATE_KEY][day] for day in last_seven_days 
+            if day in code_stats_response[CODE_STATS_DATE_KEY]]
     )
     total_xp = code_stats_response[CODE_STATS_TOTAL_XP_KEY]
     total_xp_value = ""
