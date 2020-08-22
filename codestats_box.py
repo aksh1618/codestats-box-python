@@ -91,8 +91,11 @@ def get_total_xp_line(
         str(datetime.date.today() - datetime.timedelta(days=i)) for i in range(7)
     ]
     last_seven_days_xp = sum(
-        [code_stats_response[CODE_STATS_DATE_KEY][day] for day in last_seven_days 
-            if day in code_stats_response[CODE_STATS_DATE_KEY]]
+        [
+            code_stats_response[CODE_STATS_DATE_KEY][day]
+            for day in last_seven_days
+            if day in code_stats_response[CODE_STATS_DATE_KEY]
+        ]
     )
     total_xp = code_stats_response[CODE_STATS_TOTAL_XP_KEY]
     total_xp_value = ""
@@ -131,7 +134,7 @@ def __get_language_xp_line(
 
 
 def get_language_xp_lines(
-    code_stats_response: Dict[str, Any], recent: bool = True
+    code_stats_response: Dict[str, Any], stats_type: str
 ) -> List[TitleAndValue]:
     top_languages = sorted(
         code_stats_response[CODE_STATS_LANGUAGES_KEY].items(),
@@ -139,7 +142,7 @@ def get_language_xp_lines(
         reverse=True,
     )[:TOP_LANGUAGES_COUNT]
     return [
-        __get_language_xp_line(language, stats, recent)
+        __get_language_xp_line(language, stats, stats_type)
         for language, stats in top_languages
     ]
 
@@ -157,7 +160,9 @@ def update_gist(title: str, content: str) -> bool:
 def main():
 
     if not validate_and_init():
-        return
+        raise RuntimeError(
+            "Validations failed! See the messages above for more information"
+        )
 
     code_stats_user_name = os.environ[ENV_VAR_CODE_STATS_USERNAME]
     code_stats_response = get_code_stats_response(code_stats_user_name)
