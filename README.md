@@ -34,25 +34,28 @@
 
 - **STATS_TYPE:** (Optional) Type of stats, supported values:
 
-  - `level-xp`: (Default) Show total and language XPs with level:
+  - `level-xp`: (Default) Shows total and language XPs with level, sorted by XP:
 
       ```none
-      Total XP :::::::::::::::::::::: lvl  25 [1,020,821 XP]
-      Java :::::::::::::::::::::::::: lvl  17 [  512,366 XP]
+      💻 My Code::Stats XP (Top Languages)
+      Total XP :::::::::::::::::::::: lvl  26 (1,104,152 XP)
+      Java :::::::::::::::::::::::::: lvl  19 (  580,523 XP)
       ```
 
-  - `recent-xp`: Shows the past week in total as well as language wise recent XP:
+  - `recent-xp`: Shows total and language XPs with level and recent xp, sorted by recent XP:
 
       ```none
-      Total XP :::::::::::::::: 998,967 + 21,854 (past week)
-      Java :::::::::::::::::::::::::: 511,969 + 397 (new xp)
+      💻 My Code::Stats XP (Recent Languages)
+      Total XP ::::::::::::: lvl  26 (1,104,152 XP) (+1,874)
+      Python ::::::::::::::: lvl   7 (   82,719 XP) (+1,789)
       ```
 
-  - `xp`: Skips the recent stats (the parts after the ` +`) and shows just the aggregate total and language XPs:
+  - `xp`: Shows total and language XPs, sorted by XP:
 
       ```none
-      Total XP ::::::::::::::::::::::::::::::::::: 1,020,821
-      Java ::::::::::::::::::::::::::::::::::::::::: 512,366
+      💻 My Code::Stats XP (Top Languages)
+      Total XP :::::::::::::::::::::::::::::::: 1,104,152 XP
+      Java ::::::::::::::::::::::::::::::::::::   580,523 XP
       ```
 
   (This can also be put directly in `.github/workflows/codestats.yml`)
