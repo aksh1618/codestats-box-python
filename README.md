@@ -13,6 +13,7 @@
 
 ## 🎒 Prep Work
 
+0. Make sure you have a Code::Stats account! (Get one at https://codestats.net/ if you don't!)
 1. Create a new public GitHub Gist (https://gist.github.com/)
 2. Create a token with the `gist` scope and copy it. (https://github.com/settings/tokens/new)
 3. Copy the `API token`
