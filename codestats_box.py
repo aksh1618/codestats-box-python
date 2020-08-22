@@ -157,13 +157,7 @@ def update_gist(title: str, content: str) -> bool:
     print(f"{title}\n{content}")
 
 
-def main():
-
-    if not validate_and_init():
-        raise RuntimeError(
-            "Validations failed! See the messages above for more information"
-        )
-
+def get_content() -> str:
     code_stats_user_name = os.environ[ENV_VAR_CODE_STATS_USERNAME]
     code_stats_response = get_code_stats_response(code_stats_user_name)
 
@@ -175,7 +169,17 @@ def main():
         get_adjusted_line(title_and_value)
         for title_and_value in [total_xp_line, *language_xp_lines]
     ]
-    content = "\n".join(lines)
+    return "\n".join(lines)
+
+
+def main():
+
+    if not validate_and_init():
+        raise RuntimeError(
+            "Validations failed! See the messages above for more information"
+        )
+
+    content = get_content()
     update_gist(GIST_TITLE, content)
 
 
@@ -183,12 +187,20 @@ if __name__ == "__main__":
     import time
 
     s = time.perf_counter()
-    # test with python codestats_box.py test <gist> <github-token> <user> <type>
+    # test with
+    #   python codestats_box.py test <codestats-user> <stats-type>
+    # to only print content. To also test gist update, use:
+    #   python codestats_box.py test <codestats-user> <stats-type> <gist-id> <github-token>
     if len(sys.argv) > 1:
-        os.environ[ENV_VAR_GIST_ID] = sys.argv[2]
-        os.environ[ENV_VAR_GITHUB_TOKEN] = sys.argv[3]
-        os.environ[ENV_VAR_CODE_STATS_USERNAME] = sys.argv[4]
-        os.environ[ENV_VAR_STATS_TYPE] = sys.argv[5]
-    main()
+        os.environ[ENV_VAR_CODE_STATS_USERNAME] = sys.argv[2]
+        os.environ[ENV_VAR_STATS_TYPE] = sys.argv[3]
+        if len(sys.argv) > 4:
+            os.environ[ENV_VAR_GIST_ID] = sys.argv[4]
+            os.environ[ENV_VAR_GITHUB_TOKEN] = sys.argv[5]
+            main()
+        else:
+            print(get_content())
+    else:
+        main()
     elapsed = time.perf_counter() - s
     print(f"{__file__} executed in {elapsed:0.2f} seconds.")

@@ -63,7 +63,10 @@
 # setup
 pipenv install --dev
 # testing
-pipenv run python codestats_box.py test <gist-id> <github-token> <user> <type>
+# only content
+pipenv run python codestats_box.py test <codestats-user> <stats-type>
+# content and gist update
+pipenv run python codestats_box.py test <codestats-user> <stats-type> <gist-id> <github-token>
 # example
-# pipenv run python codestats_box.py test ce5221fc5f3739d2c81ce7db99f17519 cf9181618bf1618253d17161843f71a2bb161850 aksh recent-xp
+# pipenv run python codestats_box.py test aksh recent-xp ce5221fc5f3739d2c81ce7db99f17519 cf9181618bf1618253d17161843f71a2bb161850
 ```
