@@ -1,7 +1,9 @@
 name: Update gist with Code::Stats stats
 on:
   push:
-    branches: master
+    branches:
+      - master
+      - reenable-workflow
   schedule:
     - cron: "0 */3 * * *"
 jobs:
