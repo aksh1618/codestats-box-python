@@ -212,6 +212,15 @@ def update_gist(title: str, content: str) -> bool:
     gist = Github(access_token).get_gist(gist_id)
     # Works only for single file. Should we clear all files and create new file?
     old_title = list(gist.files.keys())[0]
+
+    # Fetch current Gist content
+    current_content = gist.files[old_title].content
+
+    # Compare with new content
+    if current_content == content:
+        print("Gist content is already up-to-date. Skipping update.")
+        return # Return without updating
+
     gist.edit(title, {old_title: InputFileContent(content, title)})
     print(f"{title}\n{content}")
 
